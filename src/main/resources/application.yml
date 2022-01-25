@@ -1,3 +1,5 @@
+server:
+  port: 19007
 logging:
   level:
     root: info
