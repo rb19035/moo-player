@@ -17,7 +17,7 @@ public class MooPlayerAppState
     public void initMooPlayerAppState()
     {
         this.playerStatusDTO = new PlayerStatusDTO();
-        
+
         this.setCurrentMediaTitle( "N/A" );
         this.setCurrentMediaURI( "N/A" );
         this.setMediaUIRQueue( null );
