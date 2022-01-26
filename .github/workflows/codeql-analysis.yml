@@ -35,7 +35,9 @@ jobs:
 
       # Build MooPlayer with Maven
       - name: Setup jdk-17 with Maven
-        uses: actions/setup-java@main
+        uses: |
+              actions/setup-java@main
+              actions/checkout@v2
         with:
           java-version: 17
           distribution: 'adopt'
