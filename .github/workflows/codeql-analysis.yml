@@ -35,13 +35,12 @@ jobs:
 
       # Build MooPlayer with Maven
       - name: Setup jdk-17 with Maven
-        uses: |
-              actions/setup-java@main
-              actions/checkout@v2
+        uses: actions/setup-java@main
         with:
           java-version: 17
           distribution: 'adopt'
-          run: mvn --batch-mode --update-snapshots verify
+
+      - run: mvn --batch-mode --update-snapshots verify
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@v1
