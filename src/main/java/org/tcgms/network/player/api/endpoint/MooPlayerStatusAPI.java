@@ -33,6 +33,7 @@ public class MooPlayerStatusAPI
         {
             LOGGER.debug( "Received call to GET player status API." );
 
+            // Call the service and return the current status
             playerStatusDTO = this.playerStatusService.getPlayerStatus();
 
             return ResponseEntity.ok( playerStatusDTO );
