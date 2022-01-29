@@ -3,11 +3,11 @@ package org.tcgms.network.player.api.endpoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tcgms.network.player.MooPlayerException;
 import org.tcgms.network.player.api.dto.PlayerStatusDTO;
 import org.tcgms.network.player.api.service.PlayerStatusService;
 
@@ -24,24 +24,14 @@ public class MooPlayerStatusAPI
         this.playerStatusService = playerStatusService;
     }
 
-    @GetMapping( produces = { "application/hal+json" } )
+    @GetMapping( produces = { MediaType.APPLICATION_JSON_VALUE } )
     public ResponseEntity<PlayerStatusDTO> healthCheck()
     {
-        PlayerStatusDTO playerStatusDTO = null;
+        LOGGER.debug( "Received call to GET player status API." );
 
-        try
-        {
-            LOGGER.debug( "Received call to GET player status API." );
+        // Call the service and return the current status
+        PlayerStatusDTO playerStatusDTO = this.playerStatusService.getPlayerStatus();
 
-            // Call the service and return the current status
-            playerStatusDTO = this.playerStatusService.getPlayerStatus();
-
-            return ResponseEntity.ok( playerStatusDTO );
-
-        } catch( MooPlayerException e )
-        {
-            LOGGER.error( "Could not execute request to get MooPlayer status.", e );
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok( playerStatusDTO );
     }
 }

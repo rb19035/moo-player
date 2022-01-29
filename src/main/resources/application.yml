@@ -1,6 +1,27 @@
 server:
   port: 19007
+
 logging:
   level:
     root: info
-    org.tcgms: debug
+    org:
+      tcgms: debug
+      springframework:
+        web: debug
+          #filter:
+           # CommonsRequestLoggingFilter: debug
+
+
+spring:
+  servlet:
+    multipart:
+      max-file-size: 60MB
+      max-request-size: 60MB
+  quartz:
+    auto-startup: true
+    job-store-type: memory
+    scheduler-name: quartzScheduler
+
+application:
+  storage:
+    dir: /tmp

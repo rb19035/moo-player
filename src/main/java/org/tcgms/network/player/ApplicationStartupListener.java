@@ -1,9 +1,9 @@
 package org.tcgms.network.player;
 
 import org.quartz.*;
-import org.quartz.impl.StdSchedulerFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -17,12 +17,19 @@ public class ApplicationStartupListener
     private static final String MOO_PLAYER_BLUETOOTH_JOB_GROUP = "MooPlayerBluetoothListenerGroup";
     private static final String MOO_PLAYER_BLUETOOTH_TRIGGER_NAME = "MooPlayerBluetoothListenerTrigger";
 
+    private final Scheduler quartzScheduler;
+
+    @Autowired
+    public ApplicationStartupListener(Scheduler quartzScheduler)
+    {
+        this.quartzScheduler = quartzScheduler;
+    }
+
     @EventListener
     public void onApplicationEvent( ContextRefreshedEvent event )
     {
         JobDetail bluetoothListenerJob = null;
         Trigger bluetoothListenerJobTrigger = null;
-        Scheduler bluetoothJobScheduler = null;
 
         try
         {
@@ -44,10 +51,9 @@ public class ApplicationStartupListener
                     )
                     .build();
 
-            // Tell quartz to schedule the job using our trigger
-            bluetoothJobScheduler = StdSchedulerFactory.getDefaultScheduler();
-            bluetoothJobScheduler.start();
-            bluetoothJobScheduler.scheduleJob( bluetoothListenerJob, bluetoothListenerJobTrigger );
+            this.quartzScheduler.scheduleJob( bluetoothListenerJob, bluetoothListenerJobTrigger  );
+
+
 
         } catch( SchedulerException e )
         {
