@@ -32,7 +32,7 @@ public class MooPlayerMediaAPI
     @ResponseStatus( HttpStatus.OK )
     public void playMedia( @NotNull @RequestParam( "file" ) MultipartFile file )
     {
-        LOGGER.debug( "Received request to play media file." );
+        LOGGER.debug( "Received request to play media file" );
         this.mooPlayerMediaService.playMediaFile( this.fileStorageService.storeFile( file ) );
     }
 
@@ -47,6 +47,8 @@ public class MooPlayerMediaAPI
     @ResponseStatus( HttpStatus.OK )
     public void stopPlayingMedia()
     {
+        LOGGER.debug( "Received request to stop playing media file" );
+
         this.mooPlayerMediaService.stopPlayingMedia();
     }
 

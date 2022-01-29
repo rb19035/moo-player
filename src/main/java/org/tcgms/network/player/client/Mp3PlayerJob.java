@@ -15,7 +15,7 @@ public class Mp3PlayerJob implements InterruptableJob
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( Mp3PlayerJob.class );
 
-    private Player mp3player;
+    private static Player MP3_PLAYER;
 
     @Override
     public void execute( JobExecutionContext jobExecutionContext ) throws JobExecutionException
@@ -28,7 +28,16 @@ public class Mp3PlayerJob implements InterruptableJob
 
         try
         {
+            // If the player is currently processing media close it
+            if( MP3_PLAYER != null )
+            {
+                LOGGER.debug( "Media player already playing media, stopping current media" );
+
+                MP3_PLAYER.close();
+            }
+
             mp3File = (File) jobExecutionContext.getJobDetail().getJobDataMap().get( "mediaLocation" );
+
 
             if( mp3File != null )
             {
@@ -39,12 +48,12 @@ public class Mp3PlayerJob implements InterruptableJob
                 fis.read( songBuffer );
 
                 byteArrayInputStream = new ByteArrayInputStream( songBuffer );
-                this.mp3player = new Player( byteArrayInputStream );
-                this.mp3player.play();
+                MP3_PLAYER = new Player( byteArrayInputStream );
+                MP3_PLAYER.play();
 
             } else
             {
-                LOGGER.info( "Could not play media file because file was not found." );
+                LOGGER.info( "Could not play media file because file was not found" );
             }
 
         } catch ( JavaLayerException | IOException e )
@@ -56,7 +65,6 @@ public class Mp3PlayerJob implements InterruptableJob
         {
             if( mp3File!= null )
             {
-                LOGGER.debug( "Stopped media player job for file {}", mp3File.getName() );
                 mp3File.delete();
             }
         }
@@ -65,10 +73,12 @@ public class Mp3PlayerJob implements InterruptableJob
     @Override
     public void interrupt() throws UnableToInterruptJobException
     {
-        if( this.mp3player != null )
+        LOGGER.debug( "Stopping media player" );
+
+        if( MP3_PLAYER != null )
         {
-            LOGGER.debug( "Stopping media player" );
-            this.mp3player.close();
+            MP3_PLAYER.close();
+            LOGGER.debug( "Stopped media player" );
         }
     }
 }
