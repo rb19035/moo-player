@@ -19,12 +19,11 @@ public class MooPlayerMediaService
     private static final String PLAYER_GROUP_NAME = "MediaPlayerGroup";
     private static final String PLAYER_TRIGGER_NAME = "MediaPlayerTrigger";
 
-    private final FileStorageService fileStorageService;
     private final Scheduler quartzScheduler;
 
-    public MooPlayerMediaService( @Autowired FileStorageService fileStorageService, @Autowired Scheduler quartzScheduler )
+    @Autowired
+    public MooPlayerMediaService( Scheduler quartzScheduler )
     {
-        this.fileStorageService = fileStorageService;
         this.quartzScheduler = quartzScheduler;
     }
 
@@ -52,16 +51,13 @@ public class MooPlayerMediaService
                     .startAt( new Date() )
                     .build();
 
-            //mediaPlayerJobScheduler.start();
-            Date jobscheduledDate = this.quartzScheduler.scheduleJob( mediaPlayerJob, mediaPlayerJobTrigger );
+            this.quartzScheduler.scheduleJob( mediaPlayerJob, mediaPlayerJobTrigger );
 
             LOGGER.debug( "Moo Player job scheduled to play media file {}", mediaFilePath.getFileName() );
 
-            LOGGER.debug( "Moo Player job scheduled to play media file at {}", jobscheduledDate.toString() );
-
-        } catch( Throwable e )
+        } catch( SchedulerException e )
         {
-            LOGGER.error( "Could not start media player.", e );
+            LOGGER.error( "Could not schedule job to start playing media {}", mediaFilePath.getFileName(), e );
         }
     }
 
