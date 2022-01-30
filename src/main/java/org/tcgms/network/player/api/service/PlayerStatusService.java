@@ -5,8 +5,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tcgms.network.player.MooPlayerAppState;
-import org.tcgms.network.player.MooPlayerException;
 import org.tcgms.network.player.api.dto.PlayerStatusDTO;
+import org.tcgms.network.player.exception.MooPlayerException;
 
 @Service
 public class PlayerStatusService

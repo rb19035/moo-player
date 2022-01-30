@@ -1,6 +1,6 @@
-package org.tcgms.network.player;
+package org.tcgms.network.player.exception;
 
-public class MooPlayerException extends Exception
+public class MooPlayerException extends RuntimeException
 {
     public MooPlayerException()
     {

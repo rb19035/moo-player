@@ -3,9 +3,9 @@ package org.tcgms.network.player.api.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tcgms.network.player.MooPlayerException;
 import org.tcgms.network.player.api.dto.HealthCheckDTO;
 import org.tcgms.network.player.api.dto.MooPlayerSystemStatus;
+import org.tcgms.network.player.exception.MooPlayerException;
 
 import java.lang.management.ManagementFactory;
 import java.lang.management.OperatingSystemMXBean;
