@@ -33,7 +33,7 @@ public class MooPlayerHealthCheckAPI
 
     /**
      * Method implements the REST API's health check endpoint.
-     * 
+     *
      * @return healthCheckDTO - DTO object containing application health data
      */
     @GetMapping( produces = { MediaType.APPLICATION_JSON_VALUE } )
