@@ -6,23 +6,46 @@ import org.tcgms.network.player.api.dto.MooPlayerMediaStatus;
 import org.tcgms.network.player.api.dto.PlayerStatusDTO;
 
 import javax.annotation.PostConstruct;
+import java.nio.file.Path;
 import java.util.List;
 
 @Component
 public class MooPlayerAppState
 {
     private PlayerStatusDTO playerStatusDTO;
+    private int mediaPlayerFileCurrentPosition;
 
     @PostConstruct
     public void initMooPlayerAppState()
     {
         this.playerStatusDTO = new PlayerStatusDTO();
 
+        this.setPlayConfiguration( MooPlayerConfiguration.ISOLATED );
+
+        this.updateStatusToStopped();
+    }
+
+    public void updateStatusToStopped()
+    {
         this.setCurrentMediaTitle( "N/A" );
         this.setCurrentMediaURI( "N/A" );
         this.setMediaUIRQueue( null );
         this.setCurrentMediaPlayStatus( MooPlayerMediaStatus.IDLE );
-        this.setPlayConfiguration( MooPlayerConfiguration.ISOLATED );
+        this.mediaPlayerFileCurrentPosition = -1;
+    }
+
+    public void updateStatusToPlaying( Path mediaFilePath )
+    {
+        this.setCurrentMediaTitle( mediaFilePath.getFileName().toString() );
+        this.setCurrentMediaURI( mediaFilePath.toAbsolutePath().toString() );
+        this.setCurrentMediaPlayStatus( MooPlayerMediaStatus.PLAYING_MUSIC );
+        this.mediaPlayerFileCurrentPosition = -1;
+    }
+
+    public void updateStatusToPaused( int mediaPlayerFileCurrentPosition )
+    {
+        this.setCurrentMediaPlayStatus( MooPlayerMediaStatus.PAUSED_MUSIC );
+        this.mediaPlayerFileCurrentPosition = mediaPlayerFileCurrentPosition;
     }
 
     public String getCurrentMediaTitle()
@@ -83,5 +106,15 @@ public class MooPlayerAppState
     public void setPlayerStatusDTO(PlayerStatusDTO playerStatusDTO)
     {
         this.playerStatusDTO = playerStatusDTO;
+    }
+
+    public int getMediaPlayerFileCurrentPosition()
+    {
+        return mediaPlayerFileCurrentPosition;
+    }
+
+    public void setMediaPlayerFileCurrentPosition(int mediaPlayerFileCurrentPosition)
+    {
+        this.mediaPlayerFileCurrentPosition = mediaPlayerFileCurrentPosition;
     }
 }
