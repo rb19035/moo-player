@@ -52,7 +52,7 @@ public class Mp3PlayerJob implements Job, MediaPlayer
             }
 
             // Check to make sure the media file's Path obj points to something we can work with
-            if( !this.mediaFile.exists() || this.mediaFile.isFile() || !this.mediaFile.canRead() )
+            if( !this.mediaFile.exists() || !this.mediaFile.isFile() || !this.mediaFile.canRead() )
             {
                 LOGGER.error( "Could not start media player job - Cannot access media file {}", this.mediaFile.getAbsolutePath() );
                 throw new JobExecutionException();
