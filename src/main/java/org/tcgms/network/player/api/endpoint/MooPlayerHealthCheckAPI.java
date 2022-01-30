@@ -11,6 +11,9 @@ import org.springframework.web.bind.annotation.RestController;
 import org.tcgms.network.player.api.dto.HealthCheckDTO;
 import org.tcgms.network.player.api.service.HealthCheckService;
 
+/**
+ * Class encapsulates the REST API logic for a simple heath check for the application
+ */
 @RestController
 @RequestMapping( value = {"/api/healthcheck"} )
 public class MooPlayerHealthCheckAPI
@@ -18,12 +21,21 @@ public class MooPlayerHealthCheckAPI
     private static final Logger LOGGER = LoggerFactory.getLogger( MooPlayerHealthCheckAPI.class );
     private final HealthCheckService healthCheckService;
 
+    /**
+     * Class Constructor
+     * @param healthCheckService - Injected by Spring Boot
+     */
     @Autowired
     public MooPlayerHealthCheckAPI( HealthCheckService healthCheckService )
     {
         this.healthCheckService = healthCheckService;
     }
 
+    /**
+     * Method implements the REST API's health check endpoint.
+     *
+     * @return healthCheckDTO - DTO object containing application health data
+     */
     @GetMapping( produces = { MediaType.APPLICATION_JSON_VALUE } )
     public ResponseEntity<HealthCheckDTO> healthCheck()
     {
