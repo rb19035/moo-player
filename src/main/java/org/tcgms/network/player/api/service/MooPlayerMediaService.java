@@ -1,5 +1,6 @@
 package org.tcgms.network.player.api.service;
 
+import org.apache.commons.io.FilenameUtils;
 import org.quartz.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -7,7 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.tcgms.network.player.MooPlayerAppState;
 import org.tcgms.network.player.api.dto.MooPlayerMediaStatus;
-import org.tcgms.network.player.client.MediaPlayer;
+import org.tcgms.network.player.client.FlacPlayerJob;
+import org.tcgms.network.player.client.MediaPlayerJob;
 import org.tcgms.network.player.client.Mp3PlayerJob;
 import org.tcgms.network.player.exception.MooPlayerException;
 
@@ -45,11 +47,7 @@ public class MooPlayerMediaService
         {
             LOGGER.debug( "Processing requested to play media file {}", mediaFilePath.getFileName() );
 
-            mediaPlayerJob = JobBuilder.newJob( Mp3PlayerJob.class )
-                    .withIdentity( PLAYER_JOB_NAME, PLAYER_GROUP_NAME )
-                    .withDescription( PLAYER_JOB_NAME )
-                    .build();
-
+            mediaPlayerJob = this.createMediaPlayerJob( FilenameUtils.getExtension( mediaFilePath.getFileName().toString()  ) );
             mediaPlayerJob.getJobDataMap().put( Mp3PlayerJob.MEDIA_PATH_JOB_DETAIL_MAP_KEY, mediaFilePath.toFile() );
 
             if( this.mooPlayerAppState.getCurrentMediaPlayStatus().equals( MooPlayerMediaStatus.PAUSED_MUSIC ) )
@@ -91,7 +89,7 @@ public class MooPlayerMediaService
             job = this.findActiveMediaPlayerJob();
             if( job != null )
             {
-                ((MediaPlayer) job).stopPLayingMedia(); ;
+                ((MediaPlayerJob) job).stopPLayingMedia(); ;
 
             } else
             {
@@ -119,7 +117,7 @@ public class MooPlayerMediaService
             job = this.findActiveMediaPlayerJob();
             if( job != null )
             {
-                mediaFilePausedPosition = ((MediaPlayer) job).pausePlayingMedia();
+                mediaFilePausedPosition = ((MediaPlayerJob) job).pausePlayingMedia();
 
                 this.mooPlayerAppState.updateStatusToPaused( mediaFilePausedPosition );
 
@@ -148,5 +146,30 @@ public class MooPlayerMediaService
         }
 
         return null;
+    }
+
+    private JobDetail createMediaPlayerJob( String fileExtension )
+    {
+        JobDetail mediaPlayerJob = null;
+        Class mediaPlayerJobClass = null;
+
+        if( fileExtension.equalsIgnoreCase( MediaPlayerJob.FLAC_FILE ) )
+        {
+            mediaPlayerJobClass = FlacPlayerJob.class;
+
+        } else if( fileExtension.equalsIgnoreCase( MediaPlayerJob.MP3_FILE ) )
+        {
+            mediaPlayerJobClass = Mp3PlayerJob.class;
+        } else
+        {
+            return null;
+        }
+
+        mediaPlayerJob = JobBuilder.newJob( mediaPlayerJobClass)
+                .withIdentity( PLAYER_JOB_NAME, PLAYER_GROUP_NAME )
+                .withDescription( PLAYER_JOB_NAME )
+                .build();
+
+        return mediaPlayerJob;
     }
 }

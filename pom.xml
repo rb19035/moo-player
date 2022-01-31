@@ -34,7 +34,6 @@
             <artifactId>spring-boot-starter-quartz</artifactId>
             <version>2.6.3</version>
         </dependency>
-
         <dependency>
             <groupId>net.sf.bluecove</groupId>
             <artifactId>bluecove</artifactId>
@@ -70,6 +69,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jflac</groupId>
+            <artifactId>jflac-codec</artifactId>
+            <version>1.5.2</version>
         </dependency>
     </dependencies>
 
