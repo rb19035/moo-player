@@ -2,79 +2,30 @@ package org.tcgms.network.player.client;
 
 import javazoom.jl.decoder.JavaLayerException;
 import javazoom.jl.player.Player;
-import org.quartz.Job;
-import org.quartz.JobExecutionContext;
-import org.quartz.JobExecutionException;
+import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.tcgms.network.player.exception.MooPlayerException;
 
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 
 /**
  * Class encapsulates logic to play, pause, and stop a MP3 file.
  */
 
-public class Mp3PlayerJob implements Job, MediaPlayer
+public class Mp3PlayerJob extends MediaPlayerJob
 {
     public static final String PAUSE_JOB_DETAIL_MAP_KEY = "pauseKey";
     public static final String MEDIA_PATH_JOB_DETAIL_MAP_KEY = "mediaFileLocation";
     public static final String CURRENT_MEDIA_FILE_POSITION_JOB_DETAIL_MAP_KEY = "mediaFilePosition";
 
-
     private static final Logger LOGGER = LoggerFactory.getLogger( Mp3PlayerJob.class );
-
     private Player mp3Player;
-    private File mediaFile;
-    private int currentLocationInPausedMedia = -1;
 
-    /**
-     * Method implemented for the Quartz Job interface.  When called by the Quartz Scheduler this method will
-     * play or pause a media file.  Note, the playMedia() method blocks until the media is done playing.
-     *
-     * @param jobExecutionContext
-     * @throws JobExecutionException
-     */
-    @Override
-    public void execute( JobExecutionContext jobExecutionContext ) throws JobExecutionException
-    {
-        try
-        {
-            // Get the media file's Path obj from the Quartz JopDataMap
-            this.mediaFile = (File) jobExecutionContext.getJobDetail().getJobDataMap().get( MEDIA_PATH_JOB_DETAIL_MAP_KEY );
-
-            // Make sure we were provided a media file Path obj to work with
-            if( this.mediaFile == null )
-            {
-                LOGGER.error( "Could not start media player job - Media file reference is NULL" );
-                throw new JobExecutionException();
-            }
-
-            // Check to make sure the media file's Path obj points to something we can work with
-            if( !this.mediaFile.exists() || !this.mediaFile.isFile() || !this.mediaFile.canRead() )
-            {
-                LOGGER.error( "Could not start media player job - Cannot access media file {}", this.mediaFile.getAbsolutePath() );
-                throw new JobExecutionException();
-            }
-
-            // Check to see if we are being asked to restart a paused media file by checking to see if a start position was provided
-            Object temp = jobExecutionContext.getJobDetail().getJobDataMap().get( CURRENT_MEDIA_FILE_POSITION_JOB_DETAIL_MAP_KEY );
-            if(  temp != null )
-            {
-                this.currentLocationInPausedMedia = (Integer) temp;
-            }
-
-            //  Play the media file
-            this.playMedia();
-
-        } catch( MooPlayerException e )
-        {
-            LOGGER.error( "Could not start media player job", e );
-            throw new JobExecutionException( e );
-        }
-
-    }
 
     /**
      * Method is implemented for the MooPLayer MediaPlayer interface.  When called this method stops playing the
@@ -133,11 +84,19 @@ public class Mp3PlayerJob implements Job, MediaPlayer
     {
         FileInputStream fis = null;
         BufferedInputStream in = null;
-        byte[] songBuffer;
+        byte[] songBuffer = null;
         ByteArrayInputStream byteArrayInputStream = null;
+        String fileExtension = null;
 
         try
         {
+            fileExtension = FilenameUtils.getExtension( this.mediaFile.getName() );
+            if( !fileExtension.equalsIgnoreCase( MediaPlayerJob.MP3_FILE ) )
+            {
+                LOGGER.error( "Could not start media player job - media file {} is not .mp3", this.mediaFile.getAbsolutePath() );
+                throw new MooPlayerException( "Could not start media player job - media file is not .mp3" );
+            }
+
             //  If the media file is NULL then there is nothing to play
             if( this.mediaFile != null )
             {

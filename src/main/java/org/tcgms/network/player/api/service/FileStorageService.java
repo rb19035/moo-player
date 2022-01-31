@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import org.tcgms.network.player.FileStorageProperties;
+import org.tcgms.network.player.client.MediaPlayerJob;
 import org.tcgms.network.player.exception.FileStorageException;
 
 import javax.validation.constraints.NotNull;
@@ -22,7 +23,6 @@ import java.nio.file.StandardCopyOption;
 public class FileStorageService
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( FileStorageService.class );
-    private static final String[] SUPPORTED_FILE_EXTENSIONS = { "mp3", "flac", "wav" };
     private final Path storageRootDirectory;
 
     @Autowired
@@ -51,7 +51,7 @@ public class FileStorageService
         fileExtension = FilenameUtils.getExtension( multipartFile.getOriginalFilename() );
 
         // Check the file extension to make sure it is something the player supports
-        if( !ArrayUtils.contains(  SUPPORTED_FILE_EXTENSIONS, fileExtension ) )
+        if( !ArrayUtils.contains( MediaPlayerJob.SUPPORTED_FILE_EXTENSIONS, fileExtension ) )
         {
             throw new FileStorageException( "File type not supported." );
         }
