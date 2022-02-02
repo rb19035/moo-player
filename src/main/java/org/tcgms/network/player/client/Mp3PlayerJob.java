@@ -55,9 +55,9 @@ public class Mp3PlayerJob extends MediaPlayerJob
      * @return int current media player position
      */
     @Override
-    public int pausePlayingMedia()
+    public long pausePlayingMedia()
     {
-        int currentFilePosition = -1;
+        long currentFilePosition = -1;
 
         //  If the media file is NULL then there is nothing to pause/stop...else pause/stop the currently playing file
         if( this.mediaFile != null )
@@ -107,15 +107,9 @@ public class Mp3PlayerJob extends MediaPlayerJob
                 fis.read( songBuffer );
 
                 byteArrayInputStream = new ByteArrayInputStream( songBuffer );
-                this.mp3Player = new Player( byteArrayInputStream );
 
-                if( this.currentLocationInPausedMedia >= 0 )
-                {
-                    this.mp3Player.play( this.currentLocationInPausedMedia );
-                } else
-                {
-                    this.mp3Player.play();
-                }
+                this.mp3Player = new Player( byteArrayInputStream );
+                this.mp3Player.play();
 
             } else
             {
