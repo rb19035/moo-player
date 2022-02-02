@@ -6,7 +6,6 @@ import org.jflac.metadata.StreamInfo;
 import org.jflac.util.ByteData;
 
 import javax.sound.sampled.*;
-import java.io.EOFException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Vector;
@@ -61,12 +60,11 @@ public class FlacPlayer implements PCMProcessor
                 this.decoder = new FLACDecoder(is);
                 this.decoder.addPCMProcessor(this);
 
-                try {
-                    decoder.decode();
-                } catch (EOFException e) {
-                    // skip
-                }
+                decoder.decode();
 
+            } catch( IOException e )
+            {
+                // Do nothing?
             } finally
             {
                 this.stop();
@@ -77,6 +75,7 @@ public class FlacPlayer implements PCMProcessor
         {
             if( this.line != null )
             {
+                this.line.stop();
                 this.line.close();
             }
 
@@ -89,7 +88,8 @@ public class FlacPlayer implements PCMProcessor
             {
                 if( this.is != null )
                 {
-                    is.close();
+                    this.is.close();
+                    this.is = null;
                 }
             } catch( IOException e )
             {
@@ -100,6 +100,19 @@ public class FlacPlayer implements PCMProcessor
             {
                 this.decoder = null;
             }
+
+        }
+
+        public long getCurrentMediaPosition()
+        {
+            long currentPosition = -1;
+
+            if( this.line != null )
+            {
+                this.line.getMicrosecondPosition();
+            }
+
+            return currentPosition;
 
         }
 

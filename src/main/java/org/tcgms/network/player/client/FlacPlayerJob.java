@@ -34,10 +34,32 @@ public class FlacPlayerJob extends MediaPlayerJob
         }
     }
 
+    /**
+     * Method is implemented for the MooPLayer MediaPlayer interface.  When called this method stops playing the
+     * currently media file and returns the current position in the media file being played.  Note, the file is not
+     * deleted from storage.
+     *
+     * @return int current media player position
+     */
     @Override
-    public int pausePlayingMedia() throws MooPlayerException
+    public long pausePlayingMedia()
     {
-        return 0;
+        long currentFilePosition = -1;
+
+        //  If the media file is NULL then there is nothing to pause/stop...else pause/stop the currently playing file
+        if( this.mediaFile != null )
+        {
+            LOGGER.debug( "Pausing media player job for file {}", this.mediaFile.getName() );
+
+            // Get the current position on the media file
+            currentFilePosition = this.flacPlayer.getCurrentMediaPosition();
+
+            // Close/Stop the media player
+            this.flacPlayer.stop();
+        }
+
+        // Return the current file position so it can be started again at the same point
+        return currentFilePosition;
     }
 
     @Override

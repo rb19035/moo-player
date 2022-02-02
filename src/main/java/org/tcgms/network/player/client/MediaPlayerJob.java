@@ -19,12 +19,12 @@ public abstract class MediaPlayerJob implements Job
     public static final String[] SUPPORTED_FILE_EXTENSIONS = { MP3_FILE, FLAC_FILE, WAV_FILE };
 
     protected File mediaFile;
-    protected int currentLocationInPausedMedia = -1;
+    protected long currentLocationInPausedMedia = -1;
 
     private static final Logger LOGGER = LoggerFactory.getLogger( MediaPlayerJob.class );
 
     abstract public void stopPLayingMedia() throws MooPlayerException;
-    abstract public int pausePlayingMedia() throws MooPlayerException;
+    abstract public long pausePlayingMedia() throws MooPlayerException;
     abstract public void playMedia() throws MooPlayerException;
 
     /**
@@ -60,7 +60,7 @@ public abstract class MediaPlayerJob implements Job
             Object temp = jobExecutionContext.getJobDetail().getJobDataMap().get( CURRENT_MEDIA_FILE_POSITION_JOB_DETAIL_MAP_KEY );
             if(  temp != null )
             {
-                this.currentLocationInPausedMedia = (Integer) temp;
+                this.currentLocationInPausedMedia = (Long) temp;
             }
 
             //  Play the media file

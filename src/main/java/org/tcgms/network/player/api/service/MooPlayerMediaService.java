@@ -54,6 +54,10 @@ public class MooPlayerMediaService
             {
                 mediaPlayerJob.getJobDataMap().put( Mp3PlayerJob.CURRENT_MEDIA_FILE_POSITION_JOB_DETAIL_MAP_KEY,
                         this.mooPlayerAppState.getMediaPlayerFileCurrentPosition() );
+
+            } else if( this.mooPlayerAppState.getCurrentMediaPlayStatus().equals( MooPlayerMediaStatus.PLAYING_MUSIC ) )
+            {
+                this.stopPlayingMedia();
             }
 
             mediaPlayerJobTrigger = TriggerBuilder.newTrigger()
@@ -108,7 +112,7 @@ public class MooPlayerMediaService
     public void pausePlayingMedia() throws MooPlayerException
     {
         Job job;
-        int mediaFilePausedPosition;
+        long mediaFilePausedPosition;
 
         try
         {

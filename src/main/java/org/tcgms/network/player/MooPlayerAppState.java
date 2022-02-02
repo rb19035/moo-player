@@ -13,7 +13,7 @@ import java.util.List;
 public class MooPlayerAppState
 {
     private PlayerStatusDTO playerStatusDTO;
-    private int mediaPlayerFileCurrentPosition;
+    private long mediaPlayerFileCurrentPosition;
 
     @PostConstruct
     public void initMooPlayerAppState()
@@ -42,7 +42,7 @@ public class MooPlayerAppState
         this.mediaPlayerFileCurrentPosition = -1;
     }
 
-    public void updateStatusToPaused( int mediaPlayerFileCurrentPosition )
+    public void updateStatusToPaused( long mediaPlayerFileCurrentPosition )
     {
         this.setCurrentMediaPlayStatus( MooPlayerMediaStatus.PAUSED_MUSIC );
         this.mediaPlayerFileCurrentPosition = mediaPlayerFileCurrentPosition;
@@ -108,12 +108,12 @@ public class MooPlayerAppState
         this.playerStatusDTO = playerStatusDTO;
     }
 
-    public int getMediaPlayerFileCurrentPosition()
+    public long getMediaPlayerFileCurrentPosition()
     {
         return mediaPlayerFileCurrentPosition;
     }
 
-    public void setMediaPlayerFileCurrentPosition(int mediaPlayerFileCurrentPosition)
+    public void setMediaPlayerFileCurrentPosition(long mediaPlayerFileCurrentPosition)
     {
         this.mediaPlayerFileCurrentPosition = mediaPlayerFileCurrentPosition;
     }
