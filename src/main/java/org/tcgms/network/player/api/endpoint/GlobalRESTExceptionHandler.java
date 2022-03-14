@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 import org.tcgms.network.player.exception.FileStorageException;
 import org.tcgms.network.player.exception.MooPlayerException;
+import org.tcgms.network.player.exception.MooPlayerNoMediaQueuedException;
 
 import javax.validation.ValidationException;
 
@@ -16,27 +17,35 @@ import javax.validation.ValidationException;
 public class GlobalRESTExceptionHandler extends ResponseEntityExceptionHandler
 {
     private static Logger LOGGER = LoggerFactory.getLogger( GlobalRESTExceptionHandler.class );
-    private static final String FILE_STORAGE_EXCEPTION = "Could not save or access media.";
-    private static final String VALIDATION_EXCEPTION = "Missing a required param..";
+    private static final String FILE_STORAGE_EXCEPTION = "Could not save or access media";
+    private static final String VALIDATION_EXCEPTION = "Missing a required param";
+    private static final String NO_MEDIA_IN_QUEUE_EXCEPTION = "No media files in player queue";
 
     @ExceptionHandler( value = FileStorageException.class )
     public ResponseEntity<?> fileStorageException( FileStorageException fileStorageException)
     {
-        LOGGER.error( "Error while doing File IO.", fileStorageException );
+        LOGGER.error( "Error while doing File IO", fileStorageException );
         return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).body( FILE_STORAGE_EXCEPTION );
     }
 
     @ExceptionHandler( value = MooPlayerException.class )
     public ResponseEntity<?> mooPlayerException( MooPlayerException mooPlayerException )
     {
-        LOGGER.error( "Error while doing File IO.", mooPlayerException );
+        LOGGER.error( "Error while doing File IO", mooPlayerException );
         return ResponseEntity.status( HttpStatus.INTERNAL_SERVER_ERROR ).build();
     }
 
     @ExceptionHandler( value = ValidationException.class )
     public ResponseEntity<?> validationException( ValidationException validationException )
     {
-        LOGGER.error( "Error while doing File IO.", validationException );
+        LOGGER.error( "Error while doing File IO", validationException );
         return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( VALIDATION_EXCEPTION );
+    }
+
+    @ExceptionHandler( value = MooPlayerNoMediaQueuedException.class )
+    public ResponseEntity<?> mooPlayerNoMediaQueuedException( MooPlayerNoMediaQueuedException mooPlayerNoMediaQueuedException )
+    {
+        LOGGER.error( "No media files in player queue", mooPlayerNoMediaQueuedException );
+        return ResponseEntity.status( HttpStatus.BAD_REQUEST ).body( NO_MEDIA_IN_QUEUE_EXCEPTION );
     }
 }

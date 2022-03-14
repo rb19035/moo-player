@@ -3,8 +3,8 @@ package org.tcgms.network.player.api.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.tcgms.network.player.api.dto.HealthCheckDTO;
-import org.tcgms.network.player.api.dto.MooPlayerSystemStatus;
+import org.tcgms.network.player.api.bo.HealthCheckData;
+import org.tcgms.network.player.api.bo.MooPlayerSystemStatus;
 import org.tcgms.network.player.exception.MooPlayerException;
 
 import java.lang.management.ManagementFactory;
@@ -24,19 +24,13 @@ public class HealthCheckService
      * @return HealthCheckDTO
      * @throws MooPlayerException
      */
-    public HealthCheckDTO executeHealthCheck() throws MooPlayerException
+    public HealthCheckData executeHealthCheck() throws MooPlayerException
     {
-        HealthCheckDTO healthCheckDTO = new HealthCheckDTO();
-
         // Get a reference to the underlying OS
         OperatingSystemMXBean operatingSystemMXBean = ManagementFactory.getOperatingSystemMXBean();
 
-        // Get the current system load
-        healthCheckDTO.setSystemLoad( operatingSystemMXBean.getSystemLoadAverage() );
+        HealthCheckData healthCheckData = new HealthCheckData( operatingSystemMXBean.getSystemLoadAverage(), MooPlayerSystemStatus.OK );
 
-        // TO-DO ... Not sure if this is needed
-        healthCheckDTO.setDatabaseStatus( MooPlayerSystemStatus.OK );
-
-        return healthCheckDTO;
+        return healthCheckData;
     }
 }

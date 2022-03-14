@@ -8,28 +8,28 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tcgms.network.player.api.dto.PlayerStatusDTO;
-import org.tcgms.network.player.api.service.PlayerStatusService;
+import org.tcgms.network.player.api.bo.PlayerStatus;
+import org.tcgms.network.player.api.service.StatusService;
 
 /**
  * Class encapsulates the REST API logic check the application's current state
  */
 @RestController
 @RequestMapping( value = {"/api/status"} )
-public class MooPlayerStatusAPI
+public class StatusAPI
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( MooPlayerStatusAPI.class );
-    private final PlayerStatusService playerStatusService;
+    private static final Logger LOGGER = LoggerFactory.getLogger( StatusAPI.class );
+    private final StatusService statusService;
 
     /**
      * Class constructor
      *
-     * @param playerStatusService - Status service impl injected by Spring Boot
+     * @param statusService - Status service impl injected by Spring Boot
      */
     @Autowired
-    public MooPlayerStatusAPI( PlayerStatusService playerStatusService )
+    public StatusAPI(StatusService statusService)
     {
-        this.playerStatusService = playerStatusService;
+        this.statusService = statusService;
     }
 
     /**
@@ -38,13 +38,13 @@ public class MooPlayerStatusAPI
      * @return playerStatusDTO - DTO object containing information on the players current status
      */
     @GetMapping( produces = { MediaType.APPLICATION_JSON_VALUE } )
-    public ResponseEntity<PlayerStatusDTO> playerStatus()
+    public ResponseEntity<PlayerStatus> playerStatus()
     {
         LOGGER.debug( "Received call to GET player status API." );
 
         // Call the service and return the current status
-        PlayerStatusDTO playerStatusDTO = this.playerStatusService.getPlayerStatus();
+        PlayerStatus playerStatus = this.statusService.getPlayerStatus();
 
-        return ResponseEntity.ok( playerStatusDTO );
+        return ResponseEntity.ok( playerStatus );
     }
 }

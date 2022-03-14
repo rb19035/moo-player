@@ -7,33 +7,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
-import org.tcgms.network.player.bluetooth.BluetoothListenerJob;
+import org.springframework.web.client.RestTemplate;
+import org.tcgms.network.player.job.BluetoothListenerJob;
 
 @Component
 public class ApplicationStartupListener
 {
     private static final Logger LOGGER = LoggerFactory.getLogger( ApplicationStartupListener.class );
+
     private static final String MOO_PLAYER_BLUETOOTH_JOB_NAME = "MooPlayerBluetoothListenerJob";
     private static final String MOO_PLAYER_BLUETOOTH_JOB_GROUP = "MooPlayerBluetoothListenerGroup";
     private static final String MOO_PLAYER_BLUETOOTH_TRIGGER_NAME = "MooPlayerBluetoothListenerTrigger";
 
-    private final Scheduler quartzScheduler;
 
-    @Autowired
-    public ApplicationStartupListener(Scheduler quartzScheduler)
+
+    private final Scheduler quartzScheduler;
+    private RestTemplate restTemplate;
+
+
+    public ApplicationStartupListener(@Autowired Scheduler quartzScheduler, @Autowired RestTemplate restTemplate)
     {
         this.quartzScheduler = quartzScheduler;
+        this.restTemplate = restTemplate;
     }
 
     @EventListener
-    public void onApplicationEvent( ContextRefreshedEvent event )
+    public void onApplicationEvent( final ContextRefreshedEvent event )
+    {
+        LOGGER.debug( "Moo Player application started" );
+
+        //this.startBluetoothListener( event );
+
+    }
+
+    private void startBluetoothListener( final ContextRefreshedEvent event )
     {
         JobDetail bluetoothListenerJob = null;
         Trigger bluetoothListenerJobTrigger = null;
 
         try
         {
-            LOGGER.debug( "Moo Player application started." );
+            LOGGER.debug( "Starting Bluetooth listener" );
 
             // Create the Bluetooth listener job to scan for controller devices
             bluetoothListenerJob = JobBuilder.newJob( BluetoothListenerJob.class )
@@ -46,7 +60,7 @@ public class ApplicationStartupListener
                     .startNow()
                     .withSchedule( SimpleScheduleBuilder
                             .simpleSchedule()
-                            .withIntervalInSeconds( 60 )
+                            .withIntervalInSeconds( 120 )
                             .repeatForever()
                     )
                     .build();

@@ -4,10 +4,15 @@ import org.jflac.FLACDecoder;
 import org.jflac.PCMProcessor;
 import org.jflac.metadata.StreamInfo;
 import org.jflac.util.ByteData;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.sound.sampled.*;
+import javax.validation.ValidationException;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Path;
 import java.util.Vector;
 
 /* libFLAC - Free Lossless Audio Codec library
@@ -29,8 +34,11 @@ import java.util.Vector;
  * Boston, MA  02111-1307, USA.
  */
 
-public class FlacPlayer implements PCMProcessor
+public final class FlacPlayer implements PCMProcessor, MediaPlayer
 {
+    private static final Logger LOGGER = LoggerFactory.getLogger( FlacPlayer.class );
+    private final Path flacMediaFilePath;
+
     /**
      * Play a FLAC file application.
      * @author kc7bfi
@@ -41,6 +49,41 @@ public class FlacPlayer implements PCMProcessor
         private Vector listeners = new Vector();
         private FileInputStream is = null;
         private FLACDecoder decoder = null;
+
+
+        public FlacPlayer( final Path flacMediaFilePath )
+        {
+            this.flacMediaFilePath = flacMediaFilePath;
+
+            if ( flacMediaFilePath == null || !flacMediaFilePath.toFile().exists() )
+            {
+                LOGGER.error( "Flac media file path is null" );
+                throw new ValidationException();
+            }
+
+            File flacFile = flacMediaFilePath.toFile();
+            if( !flacFile.exists() || !flacFile.isFile() || !flacFile.canRead() )
+            {
+                LOGGER.debug( "Flac media file is not accessible" );
+                throw new ValidationException();
+            }
+
+            try
+            {
+                this.is = new FileInputStream( this.flacMediaFilePath.toFile() );
+                this.decoder = new FLACDecoder(is);
+                this.decoder.addPCMProcessor(this);
+
+                // ---> decoder.decode();
+
+            } catch( IOException e )
+            {
+                // Do nothing?
+            } finally
+            {
+                this.stop();
+            }
+        }
 
         public void addListener (LineListener listener)
         {
@@ -60,7 +103,7 @@ public class FlacPlayer implements PCMProcessor
                 this.decoder = new FLACDecoder(is);
                 this.decoder.addPCMProcessor(this);
 
-                decoder.decode();
+                // ---> decoder.decode();
 
             } catch( IOException e )
             {
@@ -71,7 +114,28 @@ public class FlacPlayer implements PCMProcessor
             }
         }
 
-        public void stop()
+    @Override
+    public void play()
+    {
+        try
+        {
+            LOGGER.debug( "Playing FLAC media file" );
+
+            this.decoder.decode();
+
+            LOGGER.debug( "Completed playing FLAC media file" );
+
+        } catch( IOException e )
+        {
+            e.printStackTrace();
+        } finally
+        {
+            this.stop();
+        }
+    }
+
+    @Override
+    public void stop()
         {
             if( this.line != null )
             {
@@ -103,7 +167,13 @@ public class FlacPlayer implements PCMProcessor
 
         }
 
-        public long getCurrentMediaPosition()
+    @Override
+    public void pause()
+    {
+
+    }
+
+    public long getCurrentMediaPosition()
         {
             long currentPosition = -1;
 

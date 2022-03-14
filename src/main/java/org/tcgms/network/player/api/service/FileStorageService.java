@@ -7,8 +7,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
-import org.tcgms.network.player.FileStorageProperties;
-import org.tcgms.network.player.client.MediaPlayerJob;
+import org.tcgms.network.player.client.MediaPlayer;
+import org.tcgms.network.player.config.FileStorageProperties;
 import org.tcgms.network.player.exception.FileStorageException;
 
 import javax.validation.constraints.NotNull;
@@ -31,7 +31,7 @@ public class FileStorageService
         this.storageRootDirectory = Path.of( fileStorageProperties.getDir() );
     }
 
-    public Path storeFile( @NotNull MultipartFile multipartFile ) throws FileStorageException
+    public Path storeFile( @NotNull final MultipartFile multipartFile ) throws FileStorageException
     {
         Path destinationFile = null;
         String fileExtension = null;
@@ -51,7 +51,7 @@ public class FileStorageService
         fileExtension = FilenameUtils.getExtension( multipartFile.getOriginalFilename() );
 
         // Check the file extension to make sure it is something the player supports
-        if( !ArrayUtils.contains( MediaPlayerJob.SUPPORTED_FILE_EXTENSIONS, fileExtension ) )
+        if( !ArrayUtils.contains( MediaPlayer.SUPPORTED_FILE_EXTENSIONS, fileExtension ) )
         {
             throw new FileStorageException( "File type not supported." );
         }

@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.tcgms.network.player.api.dto.HealthCheckDTO;
+import org.tcgms.network.player.api.bo.HealthCheckData;
 import org.tcgms.network.player.api.service.HealthCheckService;
 
 /**
@@ -16,9 +16,9 @@ import org.tcgms.network.player.api.service.HealthCheckService;
  */
 @RestController
 @RequestMapping( value = {"/api/healthcheck"} )
-public class MooPlayerHealthCheckAPI
+public class HealthCheckAPI
 {
-    private static final Logger LOGGER = LoggerFactory.getLogger( MooPlayerHealthCheckAPI.class );
+    private static final Logger LOGGER = LoggerFactory.getLogger( HealthCheckAPI.class );
     private final HealthCheckService healthCheckService;
 
     /**
@@ -26,7 +26,7 @@ public class MooPlayerHealthCheckAPI
      * @param healthCheckService - Injected by Spring Boot
      */
     @Autowired
-    public MooPlayerHealthCheckAPI( HealthCheckService healthCheckService )
+    public HealthCheckAPI(HealthCheckService healthCheckService )
     {
         this.healthCheckService = healthCheckService;
     }
@@ -37,12 +37,12 @@ public class MooPlayerHealthCheckAPI
      * @return healthCheckDTO - DTO object containing application health data
      */
     @GetMapping( produces = { MediaType.APPLICATION_JSON_VALUE } )
-    public ResponseEntity<HealthCheckDTO> healthCheck()
+    public ResponseEntity<HealthCheckData> healthCheck()
     {
         LOGGER.debug( "Received call for MooPlayer health check." );
 
-        HealthCheckDTO healthCheckDTO = this.healthCheckService.executeHealthCheck();
+        HealthCheckData healthCheckData = this.healthCheckService.executeHealthCheck();
 
-        return ResponseEntity.ok( healthCheckDTO );
+        return ResponseEntity.ok( healthCheckData );
     }
 }

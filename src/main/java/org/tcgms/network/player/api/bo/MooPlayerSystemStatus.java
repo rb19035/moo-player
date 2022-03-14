@@ -1,4 +1,4 @@
-package org.tcgms.network.player.api.dto;
+package org.tcgms.network.player.api.bo;
 
 public enum MooPlayerSystemStatus
 {
