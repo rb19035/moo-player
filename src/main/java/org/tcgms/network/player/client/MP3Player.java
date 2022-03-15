@@ -53,8 +53,10 @@ public final class MP3Player implements MediaPlayer
     {
         try
         {
-            LOGGER.debug( "Playing MP3 file {}", this.mp3FilePath.toString() );
+            LOGGER.debug( "Playing MP3 file {} at {}ms", this.mp3FilePath.toString(), System.currentTimeMillis() );
+
             this.player.play();
+
             LOGGER.debug( "Completed playing MP3 file {}", this.mp3FilePath.toString() );
 
         } catch( JavaLayerException e )
